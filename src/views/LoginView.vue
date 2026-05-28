@@ -103,3 +103,107 @@ const login = async () => {
 }
 
 </script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #f5f5f5;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bg-white {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.2);
+  padding: 2rem;
+  width: 100%;
+  max-width: 28rem;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.75rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+input {
+  width: 100%;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+  border-color: #764ba2;
+  box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+}
+
+button {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  margin-top: 0.5rem;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -5px rgba(118, 75, 162, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.text-red-500 {
+  color: #ef4444;
+  font-size: 0.875rem;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+</style>

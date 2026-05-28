@@ -22,7 +22,11 @@
 
       <!-- CHAT -->
 
-      <button class="nav-btn active">
+      <button
+        class="nav-btn"
+        :class="{ active: route.path == '/chat' }"
+        @click="router.push('/chat')"
+      >
 
         <i class="ti ti-message-circle"></i>
 
@@ -32,21 +36,13 @@
 
       </button>
 
-      <!-- NOTIFICACIONES -->
+      <!-- MULTAS ADMIN -->
 
-      <button class="nav-btn">
-
-        <i class="ti ti-bell"></i>
-
-        <span>
-          Notificaciones
-        </span>
-
-      </button>
-
-      <!-- MULTAS -->
-
-      <button class="nav-btn">
+      <button
+        class="nav-btn"
+        :class="{ active: route.path == '/multas' }"
+        @click="router.push('/multas')"
+      >
 
         <i class="ti ti-alert-triangle"></i>
 
@@ -56,11 +52,148 @@
 
       </button>
 
+      <!-- MIS MULTAS -->
+
+      <button
+        class="nav-btn"
+        :class="{ active: route.path == '/multas-general' }"
+        @click="router.push('/multas-general')"
+      >
+
+        <i class="ti ti-file-text"></i>
+
+        <span>
+          Mis Multas
+        </span>
+
+      </button>
+
     </nav>
 
-    <!-- USER -->
+    <!-- RIGHT -->
 
     <div class="header-right">
+
+      <!-- NOTIFICACIONES -->
+
+      <div class="notification-menu">
+
+        <button
+          class="notification-btn"
+          @click="toggleMenu"
+        >
+
+          <div class="notification-wrapper">
+
+            <img
+              src="../assets/notificacion.png"
+              class="notification-image"
+            />
+
+            <span
+              v-if="notificaciones.length > 0"
+              class="notification-badge"
+            >
+              {{ notificaciones.length }}
+            </span>
+
+          </div>
+
+        </button>
+
+        <!-- DROPDOWN -->
+
+        <div
+          v-if="mostrarMenu"
+          class="notification-dropdown"
+        >
+
+          <div class="dropdown-header">
+
+            <h3>
+              Notificaciones
+            </h3>
+
+          </div>
+
+          <!-- LISTA -->
+
+          <div
+            v-if="notificaciones.length > 0"
+            class="notification-list"
+          >
+
+            <div
+              v-for="(item, index) in notificaciones"
+              :key="index"
+              class="notification-item"
+              @click="abrirNotificacion(item)"
+            >
+
+              <!-- ICON -->
+
+              <div class="notification-icon">
+
+                <i
+                  class="ti"
+                  :class="
+                    item.tipo == 'mensaje'
+                    ? 'ti-message-circle'
+                    : 'ti-alert-triangle'
+                  "
+                ></i>
+
+              </div>
+
+              <!-- CONTENT -->
+
+              <div class="notification-content">
+
+                <p class="notification-title">
+                  {{ item.titulo }}
+                </p>
+
+                <span class="notification-time">
+                  {{ item.hora }}
+                </span>
+
+              </div>
+
+              <!-- DELETE -->
+
+              <button
+                class="delete-notification-btn"
+                @click.stop="eliminarNotificacion(index)"
+              >
+
+                <i class="ti ti-x"></i>
+
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- VACIO -->
+
+          <div
+            v-else
+            class="empty-notifications"
+          >
+
+            <i class="ti ti-bell-off"></i>
+
+            <p>
+              Sin notificaciones
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- USER -->
 
       <div class="user-avatar">
         {{ usuarioInicial }}
@@ -72,11 +205,13 @@
         class="logout-btn"
         @click="cerrarSesion"
       >
+
         <i class="ti ti-logout"></i>
 
         <span>
           Salir
         </span>
+
       </button>
 
     </div>
@@ -87,9 +222,17 @@
 
 <script setup>
 
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+
+const route = useRoute()
+
+const mostrarMenu = ref(false)
+
+const notificaciones = ref([])
 
 const usuario = JSON.parse(
   localStorage.getItem('usuario')
@@ -99,12 +242,91 @@ const usuarioInicial = usuario?.correo
   ?.charAt(0)
   ?.toUpperCase()
 
+/* LOGOUT */
+
 const cerrarSesion = () => {
 
   localStorage.removeItem('usuario')
 
   router.push('/')
 }
+
+/* MENU */
+
+const toggleMenu = () => {
+
+  mostrarMenu.value = !mostrarMenu.value
+}
+
+/* ELIMINAR */
+
+const eliminarNotificacion = (index) => {
+
+  notificaciones.value.splice(index, 1)
+}
+
+/* ABRIR */
+
+const abrirNotificacion = (item) => {
+
+  mostrarMenu.value = false
+
+  if(item.tipo == 'mensaje'){
+
+    router.push('/chat')
+  }
+
+  if(item.tipo == 'multa'){
+
+    router.push('/multas-general')
+  }
+}
+
+/* EVENTOS */
+
+onMounted(() => {
+
+  /* CHAT */
+
+  window.Echo.channel('chat')
+  .listen('.Mensaje', (e) => {
+
+    /* NO NOTIFICARTE A TI MISMO */
+
+    if(e.data.remitente == usuario.id_persona){
+      return
+    }
+
+    notificaciones.value.unshift({
+
+      tipo: 'mensaje',
+
+      titulo: `Nuevo mensaje de ${e.data.usuario}`,
+
+      hora: 'Ahora'
+    })
+
+  })
+
+  /* MULTAS SOLO DEL USUARIO */
+
+  window.Echo.channel(
+    'multas.' + usuario.id_persona
+  )
+  .listen('.Mensaje', (e) => {
+
+    notificaciones.value.unshift({
+
+      tipo: 'multa',
+
+      titulo: e.data.mensaje,
+
+      hora: 'Ahora'
+    })
+
+  })
+
+})
 
 </script>
 
@@ -133,8 +355,10 @@ const cerrarSesion = () => {
 /* LEFT */
 
 .header-left{
+
   display: flex;
   align-items: center;
+
   gap: 12px;
 }
 
@@ -163,14 +387,17 @@ const cerrarSesion = () => {
   color: white;
 
   font-size: 22px;
+
   font-weight: bold;
 }
 
 /* NAV */
 
 .nav-menu{
+
   display: flex;
   align-items: center;
+
   gap: 10px;
 }
 
@@ -190,6 +417,7 @@ const cerrarSesion = () => {
 
   display: flex;
   align-items: center;
+
   gap: 8px;
 
   font-size: 14px;
@@ -199,21 +427,28 @@ const cerrarSesion = () => {
 }
 
 .nav-btn:hover{
+
   background: rgba(255,255,255,.2);
 }
 
 .nav-btn.active{
+
   background: white;
+
   color: #4f8fbd;
 }
 
 /* RIGHT */
 
 .header-right{
+
   display: flex;
   align-items: center;
+
   gap: 15px;
 }
+
+/* USER */
 
 .user-avatar{
 
@@ -235,6 +470,237 @@ const cerrarSesion = () => {
   font-size: 18px;
 }
 
+/* NOTIFICATION */
+
+.notification-menu{
+
+  position: relative;
+}
+
+.notification-btn{
+
+  width: 45px;
+  height: 45px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: white;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-wrapper{
+
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-image{
+
+  width: 26px;
+  height: 26px;
+
+  object-fit: contain;
+}
+
+.notification-badge{
+
+  position: absolute;
+
+  top: -10px;
+  right: -12px;
+
+  min-width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  background: red;
+
+  color: white;
+
+  font-size: 11px;
+
+  font-weight: bold;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 2px 6px;
+}
+
+/* DROPDOWN */
+
+.notification-dropdown{
+
+  position: absolute;
+
+  top: 60px;
+  right: 0;
+
+  width: 330px;
+
+  background: white;
+
+  border-radius: 18px;
+
+  overflow: hidden;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+
+  z-index: 100;
+}
+
+.dropdown-header{
+
+  padding: 18px;
+
+  border-bottom: 1px solid #eee;
+}
+
+.dropdown-header h3{
+
+  margin: 0;
+
+  color: #222;
+}
+
+.notification-list{
+
+  max-height: 350px;
+
+  overflow-y: auto;
+}
+
+.notification-item{
+
+  display: flex;
+
+  gap: 14px;
+
+  padding: 16px 18px;
+
+  border-bottom: 1px solid #f3f3f3;
+
+  cursor: pointer;
+
+  transition: .2s;
+}
+
+.notification-item:hover{
+
+  background: #f8fbfd;
+}
+
+.notification-icon{
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: 12px;
+
+  background: #98C8E9;
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+}
+
+.notification-content{
+
+  flex: 1;
+}
+
+.notification-title{
+
+  margin: 0;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  color: #333;
+}
+
+.notification-time{
+
+  font-size: 12px;
+
+  color: gray;
+}
+
+/* DELETE */
+
+.delete-notification-btn{
+
+  width: 28px;
+  height: 28px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #999;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  transition: .2s;
+}
+
+.delete-notification-btn:hover{
+
+  background: #f1f1f1;
+
+  color: red;
+}
+
+/* EMPTY */
+
+.empty-notifications{
+
+  padding: 35px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 10px;
+
+  color: gray;
+}
+
+.empty-notifications i{
+
+  font-size: 35px;
+}
+
 /* LOGOUT */
 
 .logout-btn{
@@ -253,6 +719,7 @@ const cerrarSesion = () => {
 
   display: flex;
   align-items: center;
+
   gap: 8px;
 
   font-weight: 600;
@@ -261,7 +728,9 @@ const cerrarSesion = () => {
 }
 
 .logout-btn:hover{
+
   transform: translateY(-1px);
+
   background: #f4f9fc;
 }
 

@@ -4,92 +4,98 @@
 
   <Navbar />
 
-  <!-- CHAT -->
+  <!-- PAGE -->
 
-  <div class="chat-container">
+  <div class="page-container">
 
-    <!-- HEADER -->
+    <!-- CHAT CONTAINER -->
 
-    <header class="chat-header">
+    <div class="chat-container">
 
-      <div class="header-left">
+      <!-- HEADER -->
 
-        <div class="avatar-icon">
-          <i class="ti ti-message"></i>
+      <header class="chat-header">
+
+        <div class="header-left">
+
+          <div class="avatar-icon">
+            <i class="ti ti-message"></i>
+          </div>
+
+          <div class="header-info">
+
+            <h2 class="header-title">
+              Chat General
+            </h2>
+
+            <p class="header-status">
+              {{ usuario.correo }}
+            </p>
+
+          </div>
+
         </div>
 
-        <div class="header-info">
+      </header>
 
-          <h2 class="header-title">
-            Chat General
-          </h2>
+      <!-- MENSAJES -->
 
-          <p class="header-status">
-            {{ usuario.correo }}
-          </p>
-
-        </div>
-
-      </div>
-
-    </header>
-
-    <!-- MENSAJES -->
-
-    <section class="messages-container">
-
-      <div
-        v-for="(message, index) in messages"
-        :key="index"
-        class="message-wrapper"
-        :class="{
-          sent: message.remitente == usuario.id_persona,
-          received: message.remitente != usuario.id_persona
-        }"
-      >
+      <section class="messages-container">
 
         <div
-          class="message-bubble"
+          v-for="(message, index) in messages"
+          :key="index"
+          class="message-wrapper"
           :class="{
             sent: message.remitente == usuario.id_persona,
             received: message.remitente != usuario.id_persona
           }"
         >
 
-          <p class="message-user">
-            {{ message.usuario }}
-          </p>
+          <div
+            class="message-bubble"
+            :class="{
+              sent: message.remitente == usuario.id_persona,
+              received: message.remitente != usuario.id_persona
+            }"
+          >
 
-          <p class="message-text">
-            {{ message.mensaje }}
-          </p>
+            <p class="message-user">
+              {{ message.usuario }}
+            </p>
+
+            <p class="message-text">
+              {{ message.mensaje }}
+            </p>
+
+          </div>
 
         </div>
 
-      </div>
+      </section>
 
-    </section>
+      <!-- FOOTER -->
 
-    <!-- FOOTER -->
+      <footer class="chat-footer">
 
-    <footer class="chat-footer">
+        <input
+          v-model="inputMessage"
+          type="text"
+          placeholder="Escribe un mensaje..."
+          class="message-input"
+          @keyup.enter="sendMessage"
+        />
 
-      <input
-        v-model="inputMessage"
-        type="text"
-        placeholder="Escribe un mensaje..."
-        class="message-input"
-        @keyup.enter="sendMessage"
-      />
+        <button
+          class="send-btn"
+          @click="sendMessage"
+        >
+          <i class="ti ti-send"></i>
+        </button>
 
-      <button
-        class="send-btn"
-        @click="sendMessage"
-      >
-        <i class="ti ti-send"></i>
-      </button>
+      </footer>
 
-    </footer>
+    </div>
 
   </div>
 
@@ -98,6 +104,7 @@
 <script setup>
 
 import axios from 'axios'
+
 import { ref, onMounted } from 'vue'
 
 import Navbar from '../components/Navbar.vue'
@@ -109,6 +116,30 @@ const usuario = JSON.parse(
 const messages = ref([])
 
 const inputMessage = ref('')
+
+/* =========================================
+   CARGAR MENSAJES
+========================================= */
+
+const cargarMensajes = async () => {
+
+  try {
+
+    const response = await axios.get(
+      'http://127.0.0.1:8000/api/mensajes'
+    )
+
+    messages.value = response.data
+
+  } catch (e) {
+
+    console.log(e)
+  }
+}
+
+/* =========================================
+   ENVIAR MENSAJE
+========================================= */
 
 const sendMessage = async () => {
 
@@ -138,12 +169,20 @@ const sendMessage = async () => {
   }
 }
 
+/* =========================================
+   WEBSOCKET
+========================================= */
+
 onMounted(() => {
+
+  /* CARGAR MENSAJES GUARDADOS */
+
+  cargarMensajes()
+
+  /* ESCUCHAR CHAT */
 
   window.Echo.channel('chat')
   .listen('.Mensaje', (e) => {
-
-      console.log(e)
 
       messages.value.push(e.data)
   })
@@ -158,21 +197,50 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
+/* PAGE */
+
+.page-container{
+
+  width: 100%;
+
+  min-height: calc(100vh - 70px);
+
+  background: #f4f7fb;
+
+  display: flex;
+
+  justify-content: center;
+
+  padding: 30px;
+}
+
+/* CHAT */
+
 .chat-container {
+
+  width: 100%;
+
+  max-width: 1100px;
+
+  height: calc(100vh - 130px);
+
+  background: white;
+
+  border-radius: 25px;
+
+  overflow: hidden;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.05);
 
   display: flex;
   flex-direction: column;
-
-  height: calc(100vh - 70px);
-
-  background: #ffffff;
 }
 
 /* HEADER */
 
 .chat-header {
 
-  padding: 1rem;
+  padding: 20px;
 
   background: #f7f7f7;
 
@@ -188,32 +256,36 @@ onMounted(() => {
 
 .avatar-icon {
 
-  width: 42px;
-  height: 42px;
+  width: 45px;
+  height: 45px;
 
   border-radius: 50%;
 
-  background: #378add;
+  background: #98C8E9;
 
   color: white;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  font-size: 20px;
 }
 
 .header-title {
 
   margin: 0;
 
-  font-size: 16px;
+  font-size: 18px;
+
+  color: #222;
 }
 
 .header-status {
 
   margin: 0;
 
-  font-size: 12px;
+  font-size: 13px;
 
   color: gray;
 }
@@ -226,25 +298,28 @@ onMounted(() => {
 
   overflow-y: auto;
 
-  padding: 1rem;
+  padding: 20px;
 
   display: flex;
   flex-direction: column;
 
-  gap: 12px;
+  gap: 14px;
 
   background: #fafafa;
 }
 
 .message-wrapper {
+
   display: flex;
 }
 
 .message-wrapper.sent {
+
   justify-content: flex-end;
 }
 
 .message-wrapper.received {
+
   justify-content: flex-start;
 }
 
@@ -252,14 +327,14 @@ onMounted(() => {
 
   max-width: 70%;
 
-  padding: 12px 14px;
+  padding: 12px 15px;
 
-  border-radius: 14px;
+  border-radius: 16px;
 }
 
 .message-bubble.sent {
 
-  background: #378add;
+  background: #98C8E9;
 
   color: white;
 }
@@ -273,7 +348,7 @@ onMounted(() => {
 
 .message-user {
 
-  margin: 0 0 5px;
+  margin: 0 0 6px;
 
   font-size: 11px;
 
@@ -299,7 +374,7 @@ onMounted(() => {
 
   gap: 10px;
 
-  padding: 1rem;
+  padding: 18px;
 
   background: #f7f7f7;
 
@@ -312,9 +387,9 @@ onMounted(() => {
 
   border: 1px solid #dcdcdc;
 
-  border-radius: 10px;
+  border-radius: 12px;
 
-  padding: 12px;
+  padding: 14px;
 
   font-size: 14px;
 }
@@ -323,19 +398,19 @@ onMounted(() => {
 
   outline: none;
 
-  border-color: #378add;
+  border-color: #98C8E9;
 }
 
 .send-btn {
 
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
 
   border: none;
 
-  border-radius: 10px;
+  border-radius: 12px;
 
-  background: #378add;
+  background: #98C8E9;
 
   color: white;
 
