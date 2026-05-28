@@ -40,8 +40,10 @@
 
       <!-- MENSAJES -->
 
-      <section class="messages-container">
-
+<section
+  class="messages-container"
+  ref="messagesContainer"
+>
         <div
           v-for="(message, index) in messages"
           :key="index"
@@ -104,7 +106,7 @@
 <script setup>
 
 import axios from 'axios'
-
+import { nextTick } from 'vue'
 import { ref, onMounted } from 'vue'
 
 import Navbar from '../components/Navbar.vue'
@@ -117,6 +119,7 @@ const messages = ref([])
 
 const inputMessage = ref('')
 
+const messagesContainer = ref(null)
 /* =========================================
    CARGAR MENSAJES
 ========================================= */
@@ -130,6 +133,7 @@ const cargarMensajes = async () => {
     )
 
     messages.value = response.data
+    scrollToBottom()  
 
   } catch (e) {
 
@@ -184,10 +188,32 @@ onMounted(() => {
   window.Echo.channel('chat')
   .listen('.Mensaje', (e) => {
 
-      messages.value.push(e.data)
-  })
+messages.value.push(e.data)
+
+scrollToBottom()
+
+/* SONIDO CUANDO RESPONDE OTRA PERSONA */
+
+if(e.data.remitente != usuario.id_persona){
+
+  const audio = new Audio('/mensaje.mp3')
+
+  audio.play()
+}
+ })
 
 })
+
+const scrollToBottom = async () => {
+
+  await nextTick()
+
+  if(messagesContainer.value){
+
+    messagesContainer.value.scrollTop =
+    messagesContainer.value.scrollHeight
+  }
+}
 
 </script>
 

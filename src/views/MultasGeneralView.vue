@@ -60,10 +60,31 @@
               <td class="monto">
                 ${{ multa.monto }}
               </td>
+<td>
+  {{
+    (() => {
 
-              <td>
-                {{ multa.fecha }}
-              </td>
+      const fecha = new Date(multa.fecha)
+
+      const yyyy = fecha.getFullYear()
+
+      const mm = String(fecha.getMonth() + 1).padStart(2, '0')
+
+      const dd = String(fecha.getDate()).padStart(2, '0')
+
+      let horas = fecha.getHours()
+
+      const minutos = String(fecha.getMinutes()).padStart(2, '0')
+
+      const ampm = horas >= 12 ? 'PM' : 'AM'
+
+      horas = horas % 12 || 12
+
+      return `${yyyy}-${mm}-${dd} ${horas}:${minutos} ${ampm}`
+
+    })()
+  }}
+</td>
 
               <td>
 

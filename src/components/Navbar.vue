@@ -201,18 +201,28 @@
 
       <!-- LOGOUT -->
 
-      <button
-        class="logout-btn"
-        @click="cerrarSesion"
-      >
+<!-- LOGOUT -->
+<button
+  class="logout-btn"
+  @click="cerrarSesion"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
+    class="logout-icon"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+    />
+  </svg>
 
-        <i class="ti ti-logout"></i>
-
-        <span>
-          Salir
-        </span>
-
-      </button>
+  <span>Salir</span>
+</button>
 
     </div>
 
@@ -242,7 +252,15 @@ const usuarioInicial = usuario?.correo
   ?.charAt(0)
   ?.toUpperCase()
 
-/* LOGOUT */
+/* AUDIO */
+
+const notificationAudio = new Audio(
+  '/notificacion.mp3'
+)
+
+/* =========================================
+   LOGOUT
+========================================= */
 
 const cerrarSesion = () => {
 
@@ -251,21 +269,27 @@ const cerrarSesion = () => {
   router.push('/')
 }
 
-/* MENU */
+/* =========================================
+   MENU
+========================================= */
 
 const toggleMenu = () => {
 
   mostrarMenu.value = !mostrarMenu.value
 }
 
-/* ELIMINAR */
+/* =========================================
+   ELIMINAR
+========================================= */
 
 const eliminarNotificacion = (index) => {
 
   notificaciones.value.splice(index, 1)
 }
 
-/* ABRIR */
+/* =========================================
+   ABRIR
+========================================= */
 
 const abrirNotificacion = (item) => {
 
@@ -282,20 +306,40 @@ const abrirNotificacion = (item) => {
   }
 }
 
-/* EVENTOS */
+/* =========================================
+   EVENTOS
+========================================= */
 
 onMounted(() => {
 
-  /* CHAT */
+  /* =========================================
+     CHAT
+  ========================================= */
 
   window.Echo.channel('chat')
   .listen('.Mensaje', (e) => {
+
+    console.log(e)
 
     /* NO NOTIFICARTE A TI MISMO */
 
     if(e.data.remitente == usuario.id_persona){
       return
     }
+
+    /* SI YA ESTAS EN CHAT */
+
+    if(route.path == '/chat'){
+      return
+    }
+
+    /* SONIDO */
+
+    notificationAudio.currentTime = 0
+
+    notificationAudio.play()
+
+    /* NOTIFICACION */
 
     notificaciones.value.unshift({
 
@@ -308,12 +352,20 @@ onMounted(() => {
 
   })
 
-  /* MULTAS SOLO DEL USUARIO */
+  /* =========================================
+     MULTAS SOLO DEL USUARIO
+  ========================================= */
 
   window.Echo.channel(
     'multas.' + usuario.id_persona
   )
   .listen('.Mensaje', (e) => {
+
+    console.log(e)
+
+    notificationAudio.currentTime = 0
+
+    notificationAudio.play()
 
     notificaciones.value.unshift({
 
@@ -452,7 +504,7 @@ onMounted(() => {
 
 .user-avatar{
 
-  width: 42px;
+  width: 90px;
   height: 42px;
 
   border-radius: 50%;
@@ -718,6 +770,7 @@ onMounted(() => {
   cursor: pointer;
 
   display: flex;
+
   align-items: center;
 
   gap: 8px;
@@ -732,6 +785,15 @@ onMounted(() => {
   transform: translateY(-1px);
 
   background: #f4f9fc;
+}
+
+.logout-icon{
+
+  width: 22px;
+
+  height: 22px;
+
+  flex-shrink: 0;
 }
 
 </style>
