@@ -106,7 +106,9 @@
 <script setup>
 
 import axios from 'axios'
+
 import { nextTick } from 'vue'
+
 import { ref, onMounted } from 'vue'
 
 import Navbar from '../components/Navbar.vue'
@@ -120,6 +122,13 @@ const messages = ref([])
 const inputMessage = ref('')
 
 const messagesContainer = ref(null)
+
+/* AUDIO */
+
+const messageAudio = new Audio(
+  '/mensaje.mp3'
+)
+
 /* =========================================
    CARGAR MENSAJES
 ========================================= */
@@ -133,7 +142,8 @@ const cargarMensajes = async () => {
     )
 
     messages.value = response.data
-    scrollToBottom()  
+
+    scrollToBottom()
 
   } catch (e) {
 
@@ -174,35 +184,8 @@ const sendMessage = async () => {
 }
 
 /* =========================================
-   WEBSOCKET
+   SCROLL
 ========================================= */
-
-onMounted(() => {
-
-  /* CARGAR MENSAJES GUARDADOS */
-
-  cargarMensajes()
-
-  /* ESCUCHAR CHAT */
-
-  window.Echo.channel('chat')
-  .listen('.Mensaje', (e) => {
-
-messages.value.push(e.data)
-
-scrollToBottom()
-
-/* SONIDO CUANDO RESPONDE OTRA PERSONA */
-
-if(e.data.remitente != usuario.id_persona){
-
-  const audio = new Audio('/mensaje.mp3')
-
-  audio.play()
-}
- })
-
-})
 
 const scrollToBottom = async () => {
 
@@ -214,6 +197,40 @@ const scrollToBottom = async () => {
     messagesContainer.value.scrollHeight
   }
 }
+
+/* =========================================
+   WEBSOCKET
+========================================= */
+
+onMounted(() => {
+
+  /* CARGAR MENSAJES */
+
+  cargarMensajes()
+
+  /* ESCUCHAR CHAT */
+
+  window.Echo.channel('chat')
+  .listen('.Mensaje', (e) => {
+
+    messages.value.push(e.data)
+
+    scrollToBottom()
+
+    /* SONIDO SOLO SI RESPONDE OTRA PERSONA */
+
+    if(
+      e.data.remitente != usuario.id_persona
+    ){
+
+      messageAudio.currentTime = 0
+
+      messageAudio.play()
+    }
+
+  })
+
+})
 
 </script>
 

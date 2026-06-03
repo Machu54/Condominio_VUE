@@ -198,6 +198,8 @@
 
   <!-- MODAL -->
 
+<Transition name="bounce">
+
   <div
     v-if="mostrarModal"
     class="modal-overlay"
@@ -206,12 +208,8 @@
     <div class="modal">
 
       <h2>
-
         {{ editando ? 'Editar Multa' : 'Nueva Multa' }}
-
       </h2>
-
-      <!-- PERSONA -->
 
       <select v-model="form.id_persona">
 
@@ -224,15 +222,11 @@
           :key="persona.id"
           :value="persona.id"
         >
-
           {{ persona.nombre }}
           {{ persona.apellido_p }}
-
         </option>
 
       </select>
-
-      <!-- MOTIVO -->
 
       <input
         v-model="form.motivo"
@@ -240,15 +234,11 @@
         placeholder="Motivo"
       />
 
-      <!-- MONTO -->
-
       <input
         v-model="form.monto"
         type="number"
         placeholder="Monto"
       />
-
-      <!-- ESTADO -->
 
       <select v-model="form.estado">
 
@@ -262,16 +252,21 @@
 
       </select>
 
-      <!-- BOTONES -->
-
       <div class="modal-buttons">
 
         <button
           class="save-btn"
           @click="guardarMulta"
+          :disabled="loading"
         >
 
-          Guardar
+          <span v-if="!loading">
+            Guardar
+          </span>
+
+          <span v-else>
+            Guardando...
+          </span>
 
         </button>
 
@@ -279,9 +274,7 @@
           class="cancel-btn"
           @click="cerrarModal"
         >
-
           Cancelar
-
         </button>
 
       </div>
@@ -289,6 +282,8 @@
     </div>
 
   </div>
+
+</Transition>
 
 </template>
 
@@ -309,6 +304,8 @@ const mostrarModal = ref(false)
 const editando = ref(false)
 
 const multaId = ref(null)
+
+const loading = ref(false)
 
 const form = ref({
 
@@ -868,6 +865,40 @@ tr:hover{
   .modal{
 
     width: 95%;
+  }
+}
+
+/* TRANSICION MODAL */
+
+.bounce-enter-active {
+
+  animation: bounce-in .5s;
+}
+
+.bounce-leave-active {
+
+  animation: bounce-in .35s reverse;
+}
+
+@keyframes bounce-in {
+
+  0% {
+
+    opacity: 0;
+
+    transform: scale(0);
+  }
+
+  50% {
+
+    transform: scale(1.1);
+  }
+
+  100% {
+
+    opacity: 1;
+
+    transform: scale(1);
   }
 }
 
