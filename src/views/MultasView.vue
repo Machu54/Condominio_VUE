@@ -207,79 +207,88 @@
 
     <div class="modal">
 
-      <h2>
-        {{ editando ? 'Editar Multa' : 'Nueva Multa' }}
-      </h2>
+  <!-- LOADING -->
+  <div
+    v-if="loading"
+    class="loading-overlay"
+  >
+    <div class="spinner"></div>
+  </div>
 
-      <select v-model="form.id_persona">
+  <h2>
+    {{ editando ? 'Editar Multa' : 'Nueva Multa' }}
+  </h2>
 
-        <option disabled value="">
-          Selecciona un usuario
-        </option>
+  <select v-model="form.id_persona">
 
-        <option
-          v-for="persona in personas"
-          :key="persona.id"
-          :value="persona.id"
-        >
-          {{ persona.nombre }}
-          {{ persona.apellido_p }}
-        </option>
+    <option disabled value="">
+      Selecciona un usuario
+    </option>
 
-      </select>
+    <option
+      v-for="persona in personas"
+      :key="persona.id"
+      :value="persona.id"
+    >
+      {{ persona.nombre }}
+      {{ persona.apellido_p }}
+    </option>
 
-      <input
-        v-model="form.motivo"
-        type="text"
-        placeholder="Motivo"
-      />
+  </select>
 
-      <input
-        v-model="form.monto"
-        type="number"
-        placeholder="Monto"
-      />
+  <input
+    v-model="form.motivo"
+    type="text"
+    placeholder="Motivo"
+  />
 
-      <select v-model="form.estado">
+  <input
+    v-model="form.monto"
+    type="number"
+    placeholder="Monto"
+  />
 
-        <option value="Pendiente">
-          Pendiente
-        </option>
+  <select v-model="form.estado">
 
-        <option value="Pagada">
-          Pagada
-        </option>
+    <option value="Pendiente">
+      Pendiente
+    </option>
 
-      </select>
+    <option value="Pagada">
+      Pagada
+    </option>
 
-      <div class="modal-buttons">
+  </select>
 
-        <button
-          class="save-btn"
-          @click="guardarMulta"
-          :disabled="loading"
-        >
+  <div class="modal-buttons">
 
-          <span v-if="!loading">
-            Guardar
-          </span>
+    <button
+      class="save-btn"
+      @click="guardarMulta"
+      :disabled="loading"
+    >
 
-          <span v-else>
-            Guardando...
-          </span>
+      <span v-if="!loading">
+        Guardar
+      </span>
 
-        </button>
+      <span v-else>
+        Guardando...
+      </span>
 
-        <button
-          class="cancel-btn"
-          @click="cerrarModal"
-        >
-          Cancelar
-        </button>
+    </button>
 
-      </div>
+    <button
+      class="cancel-btn"
+      @click="cerrarModal"
+      :disabled="loading"
+    >
+      Cancelar
+    </button>
 
-    </div>
+  </div>
+
+</div>
 
   </div>
 
@@ -901,5 +910,33 @@ tr:hover{
     transform: scale(1);
   }
 }
+.modal{
+  position: relative;
+}
 
+.loading-overlay{
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 24px;
+  z-index: 999;
+}
+
+.spinner{
+  width: 50px;
+  height: 50px;
+  border: 5px solid #e5e7eb;
+  border-top: 5px solid #98C8E9;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+@keyframes spin{
+  to{
+    transform: rotate(360deg);
+  }
+}
 </style>

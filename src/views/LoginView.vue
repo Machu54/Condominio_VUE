@@ -5,7 +5,7 @@
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
 
       <h1 class="text-3xl font-bold text-center mb-6">
-        Login
+        Novahabitad
       </h1>
 
       <form @submit.prevent="login">
@@ -93,15 +93,43 @@ const login = async () => {
         JSON.stringify(response.data.usuario)
       )
 
+      localStorage.setItem(
+        'token',
+        response.data.token
+      )
+
       router.push('/chat')
     }
 
   } catch (e) {
 
-    error.value = 'Correo o contraseña incorrectos'
+    const mensaje =
+      e.response?.data?.mensaje
+
+    if(
+      mensaje ===
+      'Debes verificar tu correo antes de iniciar sesión'
+    ){
+
+      router.push({
+
+        path: '/verificar-correo',
+
+        query: {
+
+          correo: correo.value
+        }
+      })
+
+      return
+    }
+
+    error.value =
+      mensaje
+      ||
+      'Error al iniciar sesión'
   }
 }
-
 </script>
 
 <style>
@@ -121,7 +149,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #98C8E9 100%);
 }
 
 .bg-white {
@@ -138,7 +166,7 @@ h1 {
   font-weight: 700;
   text-align: center;
   margin-bottom: 1.75rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #98C8E9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -148,29 +176,37 @@ label {
   display: block;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: #333333;
   font-size: 0.95rem;
 }
 
 input {
   width: 100%;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #d1d5db;
   border-radius: 12px;
   padding: 0.85rem 1rem;
   font-size: 1rem;
-  transition: all 0.2s ease;
   font-family: inherit;
+  transition: all 0.2s ease;
+
+  background-color: #ffffff;
+  color: #000000;
+}
+
+input::placeholder {
+  color: #000000;
+  opacity: 1;
 }
 
 input:focus {
   outline: none;
   border-color: #764ba2;
-  box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+  box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.15);
 }
 
 button {
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #7ab2dd 0%, #98C8E9 100%);
   color: white;
   padding: 0.85rem 1rem;
   border-radius: 12px;
@@ -185,7 +221,7 @@ button {
 
 button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px -5px rgba(118, 75, 162, 0.4);
+  box-shadow: 0 10px 20px -5px rgba(122, 178, 221, 0.4);
 }
 
 button:active {

@@ -18,57 +18,75 @@
 
     <!-- NAV -->
 
-    <nav class="nav-menu">
+  <nav class="nav-menu">
 
-      <!-- CHAT -->
+  <!-- CHAT -->
 
-      <button
-        class="nav-btn"
-        :class="{ active: route.path == '/chat' }"
-        @click="router.push('/chat')"
-      >
+  <button
+    class="nav-btn"
+    :class="{ active: route.path == '/chat' }"
+    @click="router.push('/chat')"
+  >
 
-        <i class="ti ti-message-circle"></i>
+    <i class="ti ti-message-circle"></i>
 
-        <span>
-          Chat
-        </span>
+    <span>
+      Chat
+    </span>
 
-      </button>
+  </button>
 
-      <!-- MULTAS ADMIN -->
+  <!-- USUARIOS -->
 
-      <button
-        class="nav-btn"
-        :class="{ active: route.path == '/multas' }"
-        @click="router.push('/multas')"
-      >
+  <button
+    v-if="usuario.admin"
+    class="nav-btn"
+    :class="{ active: route.path == '/usuarios' }"
+    @click="router.push('/usuarios')"
+  >
 
-        <i class="ti ti-alert-triangle"></i>
+    <i class="ti ti-users"></i>
 
-        <span>
-          Multas
-        </span>
+    <span>
+      Usuarios
+    </span>
 
-      </button>
+  </button>
 
-      <!-- MIS MULTAS -->
+  <!-- MULTAS ADMIN -->
 
-      <button
-        class="nav-btn"
-        :class="{ active: route.path == '/multas-general' }"
-        @click="router.push('/multas-general')"
-      >
+  <button
+    v-if="usuario.admin"
+    class="nav-btn"
+    :class="{ active: route.path == '/multas' }"
+    @click="router.push('/multas')"
+  >
 
-        <i class="ti ti-file-text"></i>
+    <i class="ti ti-alert-triangle"></i>
 
-        <span>
-          Mis Multas
-        </span>
+    <span>
+      Multas
+    </span>
 
-      </button>
+  </button>
 
-    </nav>
+  <!-- MIS MULTAS -->
+
+  <button
+    class="nav-btn"
+    :class="{ active: route.path == '/multas-general' }"
+    @click="router.push('/multas-general')"
+  >
+
+    <i class="ti ti-file-text"></i>
+
+    <span>
+      Mis Multas
+    </span>
+
+  </button>
+
+</nav>
 
     <!-- RIGHT -->
 
@@ -76,123 +94,130 @@
 
       <!-- NOTIFICACIONES -->
 
-      <div class="notification-menu">
+<!-- NOTIFICACIONES -->
 
-        <button
-          class="notification-btn"
-          @click="toggleMenu"
+<div class="notification-menu">
+
+  <button
+    class="notification-btn"
+    @click="toggleMenu"
+  >
+
+    <div class="notification-wrapper">
+
+      <img
+        src="../assets/notificacion.png"
+        class="notification-image"
+      />
+
+      <span
+        v-if="notificaciones.length > 0"
+        class="notification-badge"
+      >
+        {{ notificaciones.length }}
+      </span>
+
+    </div>
+
+  </button>
+
+  <!-- DROPDOWN -->
+
+  <Transition name="slide-fade">
+
+    <div
+      v-if="mostrarMenu"
+      class="notification-dropdown"
+    >
+
+      <div class="dropdown-header">
+
+        <h3>
+          Notificaciones
+        </h3>
+
+      </div>
+
+      <!-- LISTA -->
+
+      <TransitionGroup
+        v-if="notificaciones.length > 0"
+        name="slide-fade"
+        tag="div"
+        class="notification-list"
+      >
+
+        <div
+          v-for="(item, index) in notificaciones"
+          :key="item.titulo + index"
+          class="notification-item"
+          @click="abrirNotificacion(item)"
         >
 
-          <div class="notification-wrapper">
+          <!-- ICON -->
 
-            <img
-              src="../assets/notificacion.png"
-              class="notification-image"
-            />
+          <div class="notification-icon">
 
-            <span
-              v-if="notificaciones.length > 0"
-              class="notification-badge"
-            >
-              {{ notificaciones.length }}
+            <i
+              class="ti"
+              :class="
+                item.tipo == 'mensaje'
+                ? 'ti-message-circle'
+                : 'ti-alert-triangle'
+              "
+            ></i>
+
+          </div>
+
+          <!-- CONTENT -->
+
+          <div class="notification-content">
+
+            <p class="notification-title">
+              {{ item.titulo }}
+            </p>
+
+            <span class="notification-time">
+              {{ item.hora }}
             </span>
 
           </div>
 
-        </button>
+          <!-- DELETE -->
 
-        <!-- DROPDOWN -->
-
-        <div
-          v-if="mostrarMenu"
-          class="notification-dropdown"
-        >
-
-          <div class="dropdown-header">
-
-            <h3>
-              Notificaciones
-            </h3>
-
-          </div>
-
-          <!-- LISTA -->
-
-          <div
-            v-if="notificaciones.length > 0"
-            class="notification-list"
+          <button
+            class="delete-notification-btn"
+            @click.stop="eliminarNotificacion(index)"
           >
 
-            <div
-              v-for="(item, index) in notificaciones"
-              :key="index"
-              class="notification-item"
-              @click="abrirNotificacion(item)"
-            >
+            <i class="ti ti-x"></i>
 
-              <!-- ICON -->
-
-              <div class="notification-icon">
-
-                <i
-                  class="ti"
-                  :class="
-                    item.tipo == 'mensaje'
-                    ? 'ti-message-circle'
-                    : 'ti-alert-triangle'
-                  "
-                ></i>
-
-              </div>
-
-              <!-- CONTENT -->
-
-              <div class="notification-content">
-
-                <p class="notification-title">
-                  {{ item.titulo }}
-                </p>
-
-                <span class="notification-time">
-                  {{ item.hora }}
-                </span>
-
-              </div>
-
-              <!-- DELETE -->
-
-              <button
-                class="delete-notification-btn"
-                @click.stop="eliminarNotificacion(index)"
-              >
-
-                <i class="ti ti-x"></i>
-
-              </button>
-
-            </div>
-
-          </div>
-
-          <!-- VACIO -->
-
-          <div
-            v-else
-            class="empty-notifications"
-          >
-
-            <i class="ti ti-bell-off"></i>
-
-            <p>
-              Sin notificaciones
-            </p>
-
-          </div>
+          </button>
 
         </div>
 
+      </TransitionGroup>
+
+      <!-- VACIO -->
+
+      <div
+        v-else
+        class="empty-notifications"
+      >
+
+        <i class="ti ti-bell-off"></i>
+
+        <p>
+          Sin notificaciones
+        </p>
+
       </div>
 
+    </div>
+
+  </Transition>
+
+</div>
       <!-- USER -->
 
       <div class="user-avatar">
@@ -794,6 +819,32 @@ onMounted(() => {
   height: 22px;
 
   flex-shrink: 0;
+}
+/* ANIMACION MENU NOTIFICACIONES */
+
+.slide-fade-enter-active {
+
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+
+  transition: all 0.4s ease-in;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+
+  transform: translateY(-15px);
+
+  opacity: 0;
+}
+
+/* ANIMACION DE LOS ITEMS */
+
+.slide-fade-move {
+
+  transition: all .3s ease;
 }
 
 </style>
