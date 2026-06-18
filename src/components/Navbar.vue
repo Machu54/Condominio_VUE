@@ -36,6 +36,20 @@
 
   </button>
 
+
+    <button
+    class="nav-btn"
+    :class="{ active: route.path == '/perfil' }"
+    @click="router.push('/perfil')"
+  >
+
+    <i class="ti ti-user-circle"></i>
+
+    <span>
+      Perfil
+    </span>
+
+  </button>
   <!-- USUARIOS -->
 
   <button

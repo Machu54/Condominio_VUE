@@ -82,7 +82,8 @@ const login = async () => {
       'http://127.0.0.1:8000/api/login',
       {
         correo: correo.value,
-        pass: pass.value
+        pass: pass.value,
+        dispositivo: navigator.userAgent
       }
     )
 
@@ -97,6 +98,10 @@ const login = async () => {
         'token',
         response.data.token
       )
+
+      axios.defaults.headers.common[
+        'Authorization'
+      ] = `Bearer ${response.data.token}`
 
       router.push('/chat')
     }
@@ -170,6 +175,7 @@ h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+   font-size: 28px;
 }
 
 label {

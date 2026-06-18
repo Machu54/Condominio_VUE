@@ -13,6 +13,8 @@ import MultasGeneralView from '../views/MultasGeneralView.vue'
 
 import CrudUsuarios from '../views/CrudUsuarios.vue'
 
+import PerfilView from '../views/PerfilView.vue'
+
 /* RUTAS */
 
 const routes = [
@@ -57,7 +59,11 @@ const routes = [
     {
         path: '/usuarios',
         component: CrudUsuarios
-    }
+    },
+    {
+    path: '/perfil',
+    component: PerfilView
+}
 ]
 
 /* ROUTER */

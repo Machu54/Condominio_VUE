@@ -241,11 +241,23 @@ const form = ref({
 
 const cargarUsuarios = async () => {
 
-  const response = await axios.get(
-    'http://127.0.0.1:8000/api/usuarios'
-  )
+  try {
 
-  usuarios.value = response.data
+    const response = await axios.get(
+      'http://127.0.0.1:8000/api/usuarios'
+    )
+
+    usuarios.value = response.data
+
+  } catch(error) {
+
+    console.log(error.response)
+
+    alert(
+      'STATUS = ' +
+      error.response?.status
+    )
+  }
 }
 
 const cargarPersonas = async () => {
@@ -294,7 +306,7 @@ const guardarUsuario = async () => {
 
       await axios.put(
 
-        `http://127.0.0.1:8000/api/usuarios/${usuarioId.value}`,
+        `http://127.0.0.1:8000/api/usuariosput/${usuarioId.value}`,
 
         form.value
       )
