@@ -11,6 +11,8 @@ import MultasView from '../views/MultasView.vue'
 
 import MultasGeneralView from '../views/MultasGeneralView.vue'
 
+import RecuperarPasswordView from '../views/RecuperarPasswordView.vue'
+
 import CrudUsuarios from '../views/CrudUsuarios.vue'
 
 import PerfilView from '../views/PerfilView.vue'
@@ -63,6 +65,10 @@ const routes = [
     {
     path: '/perfil',
     component: PerfilView
+},
+{
+    path: '/recuperar-password',
+    component: RecuperarPasswordView
 }
 ]
 
@@ -88,6 +94,8 @@ if(
     to.path === '/'
     ||
     to.path === '/verificar-correo'
+    ||
+    to.path === '/recuperar-password'
 ){
 
     return next()

@@ -41,10 +41,19 @@
         </div>
 
         <button
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
-        >
-          Entrar
-        </button>
+  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
+>
+  Entrar
+</button>
+
+<p
+  class="forgot-password"
+  @click="router.push('/recuperar-password')"
+>
+  ¿Olvidaste tu contraseña?
+</p>
+
+
 
       </form>
 
@@ -247,5 +256,30 @@ button:active {
 
 .mb-6 {
   margin-bottom: 1.5rem;
+}
+
+
+.forgot-password {
+
+  margin-top: 18px;
+
+  text-align: center;
+
+  color: #4f46e5;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: .2s;
+}
+
+.forgot-password:hover {
+
+  color: #312e81;
+
+  text-decoration: underline;
 }
 </style>
