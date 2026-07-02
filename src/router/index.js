@@ -42,6 +42,7 @@ const routes = [
         component: Chatview
     },
 
+    {},  
     /* CRUD MULTAS */
 
     {
